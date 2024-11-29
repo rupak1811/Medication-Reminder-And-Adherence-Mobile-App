@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    android:label="@string/tabular_view"
+    app:startDestination="@id/overviewFragment">
+
+    <fragment
+        android:id="@+id/medicinesFragment"
+        android:name="com.futsch1.medtimer.medicine.MedicinesFragment"
+        android:label="@string/tab_medicine"
+        tools:layout="@layout/fragment_medicines">
+        <action
+            android:id="@+id/action_medicinesFragment_to_editMedicineFragment"
+            app:destination="@id/editMedicineFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/overviewFragment"
+        android:name="com.futsch1.medtimer.overview.OverviewFragment"
+        android:label="@string/tab_overview"
+        tools:layout="@layout/fragment_overview">
+        <action
+            android:id="@+id/action_overviewFragment_to_editEventFragment"
+            app:destination="@id/editEventFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="com.futsch1.medtimer.PreferencesFragment"
+        android:label="@string/tab_settings">
+        <action
+            android:id="@+id/action_preferencesFragment_to_weekendModePreferencesFragment"
+            app:destination="@id/weekendModePreferencesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/weekendModePreferencesFragment"
+        android:name="com.futsch1.medtimer.WeekendModePreferencesFragment"
+        android:label="@string/weekend_mode" />
+    <fragment
+        android:id="@+id/editMedicineFragment"
+        android:name="com.futsch1.medtimer.medicine.EditMedicineFragment"
+        android:label="@string/tab_medicine"
+        tools:layout="@layout/fragment_edit_medicine">
+        <argument
+            android:name="medicineId"
+            app:argType="integer" />
+        <argument
+            android:name="medicineName"
+            app:argType="string" />
+        <argument
+            android:name="useColor"
+            app:argType="boolean" />
+        <argument
+            android:name="color"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_editMedicine_to_advancedReminderSettings"
+            app:destination="@id/advancedReminderSettingsFragment" />
+        <argument
+            android:name="notificationImportance"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_editMedicineFragment_to_medicineCalendarFragment"
+            app:destination="@id/calendarFragment" />
+        <argument
+            android:name="iconId"
+            app:argType="integer" />
+    </fragment>
+    <argument
+        android:name="reminderId"
+        app:argType="integer" />
+    <argument
+        android:name="medicineName"
+        app:argType="string" />
+    <fragment
+        android:id="@+id/advancedReminderSettingsFragment"
+        android:name="com.futsch1.medtimer.medicine.AdvancedReminderSettingsFragment"
+        android:label="@string/advanced_settings"
+        tools:layout="@layout/fragment_advanced_reminder_settings">
+        <argument
+            android:name="reminderId"
+            app:argType="integer" />
+        <argument
+            android:name="medicineName"
+            app:argType="string" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_preferencesFragment"
+        app:destination="@id/preferencesFragment" />
+    <fragment
+        android:id="@+id/reminderTableFragment"
+        android:name="com.futsch1.medtimer.remindertable.ReminderTableFragment"
+        android:label="@string/tabular_view" />
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.futsch1.medtimer.statistics.StatisticsFragment"
+        android:label="@string/analysis"
+        tools:layout="@layout/fragment_statistics">
+        <action
+            android:id="@+id/action_statisticsFragment_to_reminderTableFragment"
+            app:destination="@id/reminderTableFragment" />
+        <action
+            android:id="@+id/action_statisticsFragment_to_medicineCalendarFragment"
+            app:destination="@id/calendarFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editEventFragment"
+        android:name="com.futsch1.medtimer.overview.EditEventFragment"
+        android:label="@string/edit_event"
+        tools:layout="@layout/fragment_edit_event">
+        <argument
+            android:name="eventId"
+            app:argType="integer" />
+        <argument
+            android:name="eventAmount"
+            app:argType="string" />
+        <argument
+            android:name="eventName"
+            app:argType="string" />
+        <argument
+            android:name="eventRemindedTimestamp"
+            app:argType="long" />
+        <argument
+            android:name="eventCanEditDate"
+            app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.futsch1.medtimer.statistics.CalendarFragment"
+        android:label="@string/calendar">
+        <argument
+            android:name="medicineId"
+            app:argType="integer" />
+        <argument
+            android:name="pastDays"
+            app:argType="long" />
+        <argument
+            android:name="futureDays"
+            app:argType="long" />
+    </fragment>
+</navigation>

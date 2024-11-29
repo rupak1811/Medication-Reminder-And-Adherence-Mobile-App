@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#52C1F4"
+    android:gravity="center">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="396dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        app:cardCornerRadius="50dp">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="20dp">
+            <TextView
+                android:id="@+id/signup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SignUp"
+                android:textStyle="bold"
+                android:layout_marginBottom="40dp"
+                android:textSize="30dp"
+                android:layout_centerHorizontal="true"/>
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/signup"
+                android:focusableInTouchMode="true"
+                android:hint="Name"
+                android:padding="12dp" />
+
+            <EditText
+                android:id="@+id/age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name"
+                android:focusableInTouchMode="true"
+                android:layout_marginBottom="16dp"
+                android:hint="Age"
+                android:padding="12dp" />
+
+            <EditText
+                android:id="@+id/gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/age"
+                android:layout_marginBottom="16dp"
+                android:focusableInTouchMode="true"
+                android:hint="Gender"
+                android:padding="12dp" />
+
+            <EditText
+                android:id="@+id/contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/gender"
+                android:layout_marginBottom="16dp"
+                android:focusableInTouchMode="true"
+                android:hint="Contact"
+                android:padding="12dp" />
+
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/contact"
+                android:layout_marginBottom="16dp"
+                android:focusableInTouchMode="true"
+                android:hint="Address"
+                android:padding="12dp" />
+
+            <!-- New EditText for Phone Number -->
+            <EditText
+                android:id="@+id/phoneno"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/address"
+                android:layout_marginBottom="16dp"
+                android:focusableInTouchMode="true"
+                android:hint="Phone Number"
+                android:padding="12dp" />
+
+            <!-- New EditText for Password -->
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/phoneno"
+                android:layout_marginBottom="16dp"
+                android:focusableInTouchMode="true"
+                android:hint="Password"
+                android:padding="12dp"
+                android:inputType="textPassword" />
+
+            <Button
+                android:id="@+id/registerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/password"
+                android:text="Signup"
+                android:backgroundTint="#52C1F4"
+                android:textColor="@color/white"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

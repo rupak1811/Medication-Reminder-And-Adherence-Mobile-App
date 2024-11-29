@@ -1,0 +1,101 @@
+name: Android CI
+
+on:
+  workflow_dispatch:
+  push:
+
+env:
+  APK_RELEASE_DIRECTORY: app/build/outputs/apk/release
+  AAB_RELEASE_DIRECTORY: app/build/outputs/bundle/release
+  BUILD_TOOLS_HOME: /usr/local/lib/android/sdk/build-tools
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - name: Set up JDK 17
+        uses: actions/setup-java@b36c23c0d998641eff861008f374ee103c25ac73 # v4.4.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+      - uses: gradle/actions/setup-gradle@d156388eb19639ec20ade50009f3d199ce1e2808 # v4.1.0
+        with:
+          dependency-graph: generate-and-submit
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Cache SonarCloud packages
+        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Gradle packages
+        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+      - name: Run unit tests
+        run: ./gradlew test createDebugCoverageReport
+      - name: Run fuzzing tests
+        run: ./gradlew test -Dfuzzing=true
+      - name: Android lint
+        run: ./gradlew lint
+      - name: Build
+        run: ./gradlew build
+      - name: Analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: ./gradlew sonar
+      - name: Release bundle
+        run: ./gradlew bundleRelease
+
+      - name: Sign AAB
+        run: |
+          echo -n "${{ secrets.SIGNING_KEYSTORE }}" | base64 --decode >> $AAB_RELEASE_DIRECTORY/signingKey.jks
+          jarsigner -keystore $AAB_RELEASE_DIRECTORY/signingKey.jks -storepass ${{ secrets.SIGNING_KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.SIGNING_ALIAS_PASSWORD }} $AAB_RELEASE_DIRECTORY/MedTimer-release.aab ${{ secrets.SIGNING_ALIAS }}
+        continue-on-error: true
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4.4.2
+        with:
+          name: aab
+          path: ${{env.AAB_RELEASE_DIRECTORY}}/MedTimer-release.aab
+
+      - name: Setup build tool version variable
+        shell: bash
+        run: |
+          BUILD_TOOLS_VERSION=$(ls $BUILD_TOOLS_HOME | tail -1)
+          echo "BUILD_TOOLS_PATH=$BUILD_TOOLS_HOME/$BUILD_TOOLS_VERSION" >> $GITHUB_ENV
+      - name: Sign APK
+        run: |
+          echo -n "${{ secrets.SIGNING_KEYSTORE }}" | base64 --decode >> $APK_RELEASE_DIRECTORY/signingKey.jks
+          ${{ env.BUILD_TOOLS_PATH }}/apksigner sign --ks $APK_RELEASE_DIRECTORY/signingKey.jks --ks-key-alias ${{ secrets.SIGNING_ALIAS }} \
+            --alignment-preserved \
+            --ks-pass pass:${{ secrets.SIGNING_KEYSTORE_PASSWORD }} --key-pass pass:${{ secrets.SIGNING_ALIAS_PASSWORD }} \
+            --out $APK_RELEASE_DIRECTORY/MedTimer-release-signed.apk \
+            $APK_RELEASE_DIRECTORY/MedTimer-release-unsigned.apk
+          rm $APK_RELEASE_DIRECTORY/MedTimer-release-unsigned.apk
+        continue-on-error: true
+      - name: Upload App Package
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4.4.2
+        with:
+          name: apk
+          path: ${{env.APK_RELEASE_DIRECTORY}}/MedTimer-release-signed.apk
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5 # v1.14.0
+        with:
+          artifacts: "app/build/outputs/bundle/release/*.aab,app/build/outputs/apk/release/*.apk"
+          generateReleaseNotes: true
